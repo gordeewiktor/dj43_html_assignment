@@ -14,18 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
-from django.urls import path
-from django.shortcuts import render
+from django.urls import path, re_path
+from django.views.static import serve
 
-def index_view(request):
-    return render(request, 'index.html')
-
-def about_view(request):
-    return render(request, 'about.html')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE_ROOT = os.path.join(BASE_DIR, 'site')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index_view, name='index'),
-    path('about', about_view, name='about')
+    re_path(r'^site/(?P<path>.*)$', serve, {
+        'document_root': SITE_ROOT,
+        'show_indexes': True
+    }, name='site_path'),
 ]
